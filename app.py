@@ -10,14 +10,19 @@ st.set_page_config(
     layout="centered"
 )
 
+TARGET_DURASI_HARI = 14  # target durasi standar perusahaan
+
 @st.cache_resource
 def load_model():
     pipeline = joblib.load('model_kiln.joblib')
     with open('feature_order.json') as f:
         feature_order = json.load(f)
-    return pipeline, feature_order
+    with open('metadata.json') as f:
+        metadata = json.load(f)
+    return pipeline, feature_order, metadata
 
-pipeline, FEATURE_ORDER = load_model()
+pipeline, FEATURE_ORDER, METADATA = load_model()
+MAE_MODEL = METADATA['evaluation']['mae_test']
 
 st.title("🪵 Prediksi Durasi Pengeringan Kayu Kiln")
 st.markdown("Isi form di bawah, lalu klik **Hitung Prediksi**.")
@@ -182,15 +187,31 @@ if submitted:
     with c2:
         st.metric("📅 Perkiraan Selesai", f"{hari_selesai}, {selesai.strftime('%d %B %Y')}")
 
+    selisih_target = durasi - TARGET_DURASI_HARI
+
     c3, c4 = st.columns(2)
     with c3:
         st.metric("⏱️ Estimasi Durasi", f"{durasi} hari")
     with c4:
-        st.metric("Musim", "🌧️ Hujan" if musim == 1 else "☀️ Kemarau")
+        st.metric(
+            "🎯 Selisih dari Target",
+            f"{'+' if selisih_target > 0 else ''}{selisih_target:.1f} hari",
+            delta=f"{selisih_target:.1f} hari dari target {TARGET_DURASI_HARI} hari",
+            delta_color="inverse"
+        )
 
-    mae_model = 0.7458
-    durasi_min = max(0, durasi - mae_model)
-    durasi_max = durasi + mae_model
+    if selisih_target > 0:
+        st.warning(
+            f"⚠️ Estimasi durasi melebihi target standar ({TARGET_DURASI_HARI} hari). "
+            "Pertimbangkan penyesuaian jadwal produksi atau prioritas kiln."
+        )
+    else:
+        st.success(
+            f"✅ Estimasi durasi berada dalam atau di bawah target standar ({TARGET_DURASI_HARI} hari)."
+        )
+
+    durasi_min = max(0, durasi - MAE_MODEL)
+    durasi_max = durasi + MAE_MODEL
     st.caption(f"Rentang estimasi (± MAE model): **{durasi_min:.1f} – {durasi_max:.1f} hari**")
 
     with st.expander("📋 Detail input"):
