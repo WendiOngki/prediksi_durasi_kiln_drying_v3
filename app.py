@@ -200,16 +200,6 @@ if submitted:
             delta_color="inverse"
         )
 
-    if selisih_target > 0:
-        st.warning(
-            f"⚠️ Estimasi durasi melebihi target standar ({TARGET_DURASI_HARI} hari). "
-            "Pertimbangkan penyesuaian jadwal produksi atau prioritas kiln."
-        )
-    else:
-        st.success(
-            f"✅ Estimasi durasi berada dalam atau di bawah target standar ({TARGET_DURASI_HARI} hari)."
-        )
-
     durasi_min = max(0, durasi - MAE_MODEL)
     durasi_max = durasi + MAE_MODEL
     st.caption(f"Rentang estimasi (± MAE model): **{durasi_min:.1f} – {durasi_max:.1f} hari**")
