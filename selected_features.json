@@ -1,0 +1,22 @@
+[
+  "kelembaban_pct",
+  "curah_hujan_mm",
+  "suhu_maks_c",
+  "suhu_min_c",
+  "ket_mean",
+  "ket_max",
+  "ket_std",
+  "bulan_in",
+  "mc_akhir_ket_max",
+  "prop_2.0",
+  "prop_8.0",
+  "delta_suhu",
+  "musim",
+  "lembab_x_tebal",
+  "hujan_x_lembab",
+  "tebal_x_vol",
+  "prop_tebal_ext",
+  "rasio_lembab_suhu",
+  "hujan_x_tebal",
+  "mc_akhir_x_tebal"
+]
